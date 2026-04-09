@@ -165,7 +165,7 @@ select.fsel option{background:var(--surface2)}
 .tag{display:inline-flex;padding:2px 9px;border-radius:12px;font-size:10px;font-weight:600}
 .tag-pre{background:#fef9c3;color:#854d0e}.tag-pos{background:#fce7f3;color:#9d174d}.tag-tec{background:#ede9fe;color:#5b21b6}
 .tag-pres{background:#dcfce7;color:#166534}.tag-virt{background:#dbeafe;color:#1e40af}
-.card-footer{padding:8px 14px;border-top:1px solid var(--border);background:var(--surface2);display:flex;align-items:center;gap:8px}
+.card-footer{padding:8px 14px;border-top:1px solid var(--border);background:var(--surface2)}
 .camp-chip{font-size:10px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;display:block;cursor:help}
 
 @media(max-width:640px){.ads-grid{grid-template-columns:1fr}.settings-drawer{width:100%;right:-100%}.filterbar{padding:8px 12px}.content{padding:12px}.hd-search input{width:140px}}
@@ -227,35 +227,6 @@ select.fsel option{background:var(--surface2)}
           <p class="up-note">Archivo .html generado desde Google Ads UI</p>
           <div class="file-name" id="google-filename"></div>
         </div>
-      </div>
-    </div>
-
-    <!-- Gasto Google Ads -->
-    <div class="cfg-section">
-      <div class="cfg-head">
-        <div class="cfg-icon" style="background:rgba(52,168,83,.12)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34a853" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
-        <h3>Gasto Google Ads (CSV)</h3>
-        <span class="cfg-status st-empty" id="spend-status">Sin archivo</span>
-      </div>
-      <div class="cfg-body">
-        <div class="upload-zone" id="spend-zone" onclick="document.getElementById('spend-file').click()">
-          <input type="file" id="spend-file" accept=".csv" onchange="handleSpendFile(this)">
-          <div class="up-icon">&#128200;</div>
-          <p>Sube el CSV de gasto de Google Ads</p>
-          <p class="up-note">Columnas: Campaign, Cost (o Costo), Date (opcional)</p>
-          <div class="file-name" id="spend-filename"></div>
-        </div>
-        <div style="display:flex;gap:8px;margin-top:4px">
-          <div class="fld" style="flex:1">
-            <label>Fecha inicio</label>
-            <input type="date" id="spend-from" style="background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;padding:7px 10px;font-size:12px;color:var(--text);outline:none;width:100%" oninput="applySpendFilter()">
-          </div>
-          <div class="fld" style="flex:1">
-            <label>Fecha fin</label>
-            <input type="date" id="spend-to" style="background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;padding:7px 10px;font-size:12px;color:var(--text);outline:none;width:100%" oninput="applySpendFilter()">
-          </div>
-        </div>
-        <p style="font-size:11px;color:var(--muted);line-height:1.6;margin-top:4px">El CSV de Google Ads debe exportarse desde <strong>Campañas &rarr; Descargar &rarr; CSV</strong>. Si defines fechas, solo se marcan como "con gasto" las campañas que tuvieron inversión en ese periodo.</p>
       </div>
     </div>
 
@@ -334,13 +305,6 @@ select.fsel option{background:var(--surface2)}
   <select class="fsel" id="f-modalidad" onchange="renderGrid()"><option value="">Modalidad</option></select>
   <select class="fsel" id="f-facultad" onchange="renderGrid()"><option value="">Facultad</option></select>
   <select class="fsel" id="f-programa" onchange="renderGrid()"><option value="">Programa</option></select>
-  <div class="fb-sep"></div>
-  <span class="fb-label">Gasto:</span>
-  <select class="fsel" id="f-spend" onchange="renderGrid()">
-    <option value="">Todos los anuncios</option>
-    <option value="has_spend">Con gasto registrado</option>
-    <option value="no_spend">Sin gasto</option>
-  </select>
   <button class="clr-btn" onclick="clearFilters()">&#x2715; Limpiar</button>
   <div class="count-badge" id="count-badge">0 resultados</div>
 </div>
@@ -362,7 +326,7 @@ select.fsel option{background:var(--surface2)}
 const PRELOADED/*SNAPSHOT*/={"v":0,"m":[],"g":[],"h":[],"pw":""};
 // @@PRELOAD_END@@
 
-const S={metaAds:[],googleAds:[],homoRows:[],spendMap:new Map(),tab:'all'};
+const S={metaAds:[],googleAds:[],homoRows:[],tab:'all'};
 
 /* ---- INIT ---- */
 function init(){
@@ -380,11 +344,6 @@ function init(){
     if(S.googleAds.length){
       document.getElementById('google-status').textContent=S.googleAds.length+' anuncios';
       document.getElementById('google-status').className='cfg-status st-ok';
-    }
-    if(PRELOADED.sm&&PRELOADED.sm.length){
-      S.spendMap=new Map(PRELOADED.sm);
-      document.getElementById('spend-status').textContent=S.spendMap.size+' campañas';
-      document.getElementById('spend-status').className='cfg-status st-ok';
     }
     if(S.homoRows.length){
       document.getElementById('homo-status').textContent=S.homoRows.length+' filas';
@@ -479,7 +438,7 @@ function loadSettings(){
 /* ---- SAVE VERSION ---- */
 function saveVersion(){
   if(!S.metaAds.length&&!S.googleAds.length){toast('No hay datos para guardar','error');return;}
-  const data={v:1,m:S.metaAds,g:S.googleAds,h:S.homoRows,sm:[...S.spendMap.entries()],pw:localStorage.getItem('pw')||PRELOADED.pw||''};
+  const data={v:1,m:S.metaAds,g:S.googleAds,h:S.homoRows,pw:localStorage.getItem('pw')||PRELOADED.pw||''};
   let src='<!DOCTYPE html>\n'+document.documentElement.outerHTML;
   src=src.replace(/\/\/ @@PRELOAD_START@@[\s\S]*?\/\/ @@PRELOAD_END@@/,
     '// @@PRELOAD_START@@\nconst PRELOADED\/*SNAPSHOT*\/='+JSON.stringify(data)+';\n// @@PRELOAD_END@@');
@@ -573,9 +532,13 @@ function handleGoogleFile(inp){
       document.getElementById('google-zone').classList.add('has-file');
       st.textContent=S.googleAds.length+' anuncios';st.className='cfg-status st-ok';
       updatePills();
-      toast('Google Ads: '+S.googleAds.length+' anuncios activos','success');
+      toast('Google Ads: '+S.googleAds.length+' anuncios cargados','success');
       rebuildFilters();renderGrid();
-    }catch(err){st.textContent='Error';st.className='cfg-status st-err';toast('Error HTML: '+err.message,'error');}
+    }catch(err){
+      console.error('parseGoogle error:',err);
+      st.textContent='Error';st.className='cfg-status st-err';
+      toast('Error HTML: '+err.message,'error');
+    }
   };
   r.readAsText(f,'utf-8');
 }
@@ -584,57 +547,91 @@ function parseGoogle(html){
   const all=[...doc.querySelectorAll('*')];
   const pm=new Map(all.map((e,i)=>[e,i]));
   const posOf=e=>pm.get(e)??-1;
+
+  // Todos los h1 con status y posicion
   const h1s=[...doc.querySelectorAll('h1')].map(h=>{
     const txt=h.textContent.replace(/\s+/g,' ').trim();
     const ic=h.querySelector('i.status');
     const st=!ic?'unknown':ic.className.includes('enabled')?'enabled':ic.className.includes('paused')?'paused':'removed';
-    return{name:txt.replace(/^(?:Search\s+)?(?:Enabled|Paused|Removed)\s*/i,'').trim(),status:st,pos:posOf(h)};
+    const name=txt.replace(/^(?:Search\s+)?(?:Enabled|Paused|Removed)\s*/i,'').trim();
+    return{name,status:st,pos:posOf(h)};
   }).filter(h=>h.name.length>2);
-  // Solo campañas activas (enabled): naming convention tiene _ y texto identificador
-  const isCamp=n=>n.includes('_GG_')||n.includes('_ADE_')||n.includes('_META_')||n.includes('_Compensar')||n.includes('Compensar')||(n.includes('_')&&n.length>30);
-  const cH1=h1s.filter(h=>isCamp(h.name)&&h.status==='enabled');
-  // Grupos de anuncios activos: nombre corto, sin estructura de campaña
-  const fb=(lst,pos)=>{const c=lst.filter(h=>h.pos<pos);return c.length?c.reduce((a,b)=>a.pos>b.pos?a:b):null};
+
+  // Campana: nombre estructurado con underscores (naming convention)
+  const isCampName=n=>{
+    if(n.length<10) return false;
+    if(n.includes('_GG_')||n.includes('_ADE_')||n.includes('_META_')) return true;
+    if(n.includes('_Compensar')||n.includes('Compensar')) return true;
+    return n.split('_').length>=3&&n.length>25;
+  };
+
+  const cH1=h1s.filter(h=>isCampName(h.name)&&h.status==='enabled');
+  const aH1=h1s.filter(h=>!isCampName(h.name)&&h.name.length<80&&h.status==='enabled');
+
+  // h1 mas cercano antes de una posicion
+  const nearest=(lst,pos)=>{
+    let best=null;
+    for(const h of lst){if(h.pos<pos&&(!best||h.pos>best.pos))best=h;}
+    return best;
+  };
+
   const ads=[];
   for(const ta of doc.querySelectorAll('.textAd')){
     const ap=posOf(ta);
-    const camp=fb(cH1,ap);
-    if(!camp) continue; // campaign must be enabled (filtered above)
-    // Check ad status
+    const camp=nearest(cH1,ap);
+    if(!camp) continue;
+
+    // Status del anuncio
     const stM=ta.textContent.match(/Status:\s*(Enabled|Paused|Removed)/i);
     if(stM&&stM[1].toLowerCase()!=='enabled') continue;
-    const ag=fb(aH1,ap);
-    if(!ag) continue; // ad group must be enabled (filtered above)
+
+    const ag=nearest(aH1,ap);
+
+    // URL destino
     const lk=ta.querySelector('a[href]');
+
+    // Titulares y descripciones
     const hl=[],ds=[];
     ta.querySelectorAll('div').forEach(d=>{
-      let m=d.textContent.match(/^Headline (\d+):\s*(.+)$/);
-      if(m) hl[parseInt(m[1])-1]=m[2].trim();
-      m=d.textContent.match(/^Description (\d+):\s*(.+)$/);
-      if(m) ds[parseInt(m[1])-1]=m[2].trim();
+      const t=d.textContent.trim();
+      let m=t.match(/^Headline (\d+):\s*(.+)$/);
+      if(m){hl[parseInt(m[1])-1]=m[2].trim();return;}
+      m=t.match(/^Description (\d+):\s*(.+)$/);
+      if(m){ds[parseInt(m[1])-1]=m[2].trim();}
     });
     const d1=ta.querySelector('.dline1');
+
+    // Keywords del grupo
     const kw=[],sk=new Set();
     let par=ta.parentElement;
-    for(let depth=0;depth<10&&par;depth++,par=par.parentElement){
+    for(let depth=0;depth<12&&par;depth++,par=par.parentElement){
       for(const tr of par.querySelectorAll('tr')){
         const si=tr.querySelector('td.mdl-data-table__cell--status i.status');
         const cs=[...tr.querySelectorAll('td.mdl-data-table__cell--non-numeric')];
         if(!si||cs.length<2) continue;
-        const kt=cs[0]?.textContent.trim();
+        const kt=cs[0]?cs[0].textContent.trim():'';
         const mc=cs.find(c=>/^(Broad|Exact|Phrase|Amplia|Exacta|Frase)$/i.test(c.textContent.trim()));
-        if(!kt||kt.length<3||sk.has(kt)) continue;
+        if(!kt||kt.length<2||sk.has(kt)) continue;
         sk.add(kt);
-        kw.push({text:kt,status:si.className.includes('enabled')?'enabled':'paused',match:mc?.textContent.trim()||'Broad'});
+        kw.push({text:kt,status:si.className.includes('enabled')?'enabled':'paused',match:mc?mc.textContent.trim():'Broad'});
       }
       if(kw.length) break;
     }
+
     const hlf=hl.filter(Boolean),dsf=ds.filter(Boolean);
+    if(!hlf.length&&!dsf.length&&!d1) continue;
+
     ads.push(applyH({
-      medium:'Google',campaign_name:camp.name,ad_name:ag?.name||'',
-      headline:hlf[0]||'',body_text:d1?d1.textContent.trim():(dsf[0]||''),description:dsf[1]||'',
-      destination_url:lk?lk.getAttribute('href'):'',preview_url:'',preview_shareable_link:'',
-      headlines:hlf,descriptions:dsf,keywords:kw,nivel:'',modalidad:'',facultad:'',programa:'',sede:''
+      medium:'Google',
+      campaign_name:camp.name,
+      ad_name:ag?ag.name:'',
+      headline:hlf[0]||'',
+      body_text:d1?d1.textContent.trim():(dsf[0]||''),
+      description:dsf[1]||'',
+      destination_url:lk?lk.getAttribute('href'):'',
+      preview_url:'',preview_shareable_link:'',
+      headlines:hlf,descriptions:dsf,keywords:kw,
+      nivel:'',modalidad:'',facultad:'',programa:'',sede:''
     },true));
   }
   return ads;
@@ -650,16 +647,19 @@ function lookupMeta(name){
 function lookupGoogle(name){
   if(!S.homoRows.length) return null;
   const nname=norm(name);
-  // 1) Match exacto por nombre de campaña en columna Campaña del Excel
+  // 1) Match exacto por columna Campana del Excel
   const exact=S.homoRows.find(r=>norm(getCampKey(r))===nname);
   if(exact) return exact;
-  // 2) Match parcial: el nombre del Excel está contenido en el nombre de campaña o viceversa
-  const partial=S.homoRows.find(r=>{const rk=norm(getCampKey(r));return rk.length>4&&(nname.includes(rk)||rk.includes(nname));});
+  // 2) Match parcial
+  const partial=S.homoRows.find(r=>{
+    const rk=norm(getCampKey(r));
+    return rk.length>4&&(nname.includes(rk)||rk.includes(nname));
+  });
   if(partial) return partial;
-  // 3) Fallback: por programa (primera parte antes de _) + nivel + modalidad
+  // 3) Fallback por palabras del programa + nivel + modalidad
   const prog=name.split('_')[0]||'';
   const cu=name.toUpperCase();
-  const nv=cu.includes('_PRE_')?'Pregrado':cu.includes('_POS_')?'Posgrado':(cu.includes('_TEC')||cu.includes('TECNICO')||cu.includes('T\u00c9CNICO'))?'T\u00e9cnico laboral':'';
+  const nv=cu.includes('_PRE_')?'Pregrado':cu.includes('_POS_')?'Posgrado':(cu.includes('_TEC')||cu.includes('TECNICO'))?'T\u00e9cnico laboral':'';
   const mo=cu.includes('_VIR_')?'Virtual':cu.includes('_PRES_')?'Presencial':'';
   const np=norm(prog);
   let best=null,bs=0;
@@ -730,84 +730,6 @@ async function fetchMetaAds(){
   finally{btn.disabled=false;btn.textContent='\u25b6 Conectar y cargar anuncios';}
 }
 
-/* ---- SPEND CSV ---- */
-function handleSpendFile(inp){
-  const f=inp.files[0];if(!f) return;
-  document.getElementById('spend-filename').textContent='\uD83D\uDCCE '+f.name;
-  const r=new FileReader();
-  r.onload=e=>{
-    try{
-      const rows=parseCSV(e.target.result);
-      S._spendRaw=rows;
-      const from=document.getElementById('spend-from').value||null;
-      const to=document.getElementById('spend-to').value||null;
-      S.spendMap=buildSpendMap(rows,from,to);
-      const st=document.getElementById('spend-status');
-      st.textContent=S.spendMap.size+' campañas';st.className='cfg-status st-ok';
-      document.getElementById('spend-zone').classList.add('has-file');
-      applySpendToAds();
-      rebuildFilters();renderGrid();
-      toast('Gasto cargado: '+S.spendMap.size+' campañas','success');
-    }catch(err){toast('Error CSV gasto: '+err.message,'error');}
-  };
-  r.readAsText(f,'utf-8');
-}
-function buildSpendMap(rows,fromD,toD){
-  // Normaliza nombres de columnas buscando Campaign/Campaña y Cost/Costo/Spend/Gasto
-  if(!rows.length) return new Map();
-  const keys=Object.keys(rows[0]);
-  const campCol=keys.find(k=>/campaign|campa/i.test(k));
-  const costCol=keys.find(k=>/cost|costo|spend|gasto|inversi/i.test(k));
-  const dateCol=keys.find(k=>/date|fecha/i.test(k));
-  if(!campCol||!costCol) return new Map();
-  const from=fromD?new Date(fromD):null;
-  const to=toD?new Date(toD):null;
-  const map=new Map();
-  for(const r of rows){
-    if(dateCol&&(from||to)){
-      const d=new Date(r[dateCol]);
-      if(from&&d<from) continue;
-      if(to&&d>to) continue;
-    }
-    const cn=norm(r[campCol]||'');
-    const cost=parseFloat((r[costCol]||'0').toString().replace(/[^0-9.,-]/g,'').replace(',','.'));
-    if(!cn||isNaN(cost)) continue;
-    map.set(cn,(map.get(cn)||0)+cost);
-  }
-  return map;
-}
-function applySpendFilter(){
-  // Re-build spendMap with new date range from the file already loaded
-  const from=document.getElementById('spend-from').value;
-  const to=document.getElementById('spend-to').value;
-  if(!S.spendMap.size) return;
-  // Re-read the file — since we can't easily re-parse, we just apply the date filter on the existing map
-  // Instead, rebuild from last raw data stored in S
-  if(S._spendRaw){
-    S.spendMap=buildSpendMap(S._spendRaw,from||null,to||null);
-    applySpendToAds();
-    rebuildFilters();renderGrid();
-  }
-}
-function applySpendToAds(){
-  const mark=ads=>{
-    return ads.map(a=>{
-      const cn=norm(a.campaign_name);
-      // Try exact then partial match in spendMap
-      let spend=S.spendMap.get(cn);
-      if(spend===undefined){
-        for(const [k,v] of S.spendMap){
-          if(cn.includes(k)||k.includes(cn)){spend=v;break;}
-        }
-      }
-      a.spend=spend!==undefined?spend:null;
-      return a;
-    });
-  };
-  S.googleAds=mark(S.googleAds);
-  S.metaAds=mark(S.metaAds);
-}
-
 /* ---- TABS & FILTERS ---- */
 function setTab(t){
   S.tab=t;
@@ -816,7 +738,7 @@ function setTab(t){
 }
 function clearFilters(){
   document.getElementById('search').value='';
-  ['f-nivel','f-modalidad','f-facultad','f-programa','f-spend'].forEach(id=>document.getElementById(id).value='');
+  ['f-nivel','f-modalidad','f-facultad','f-programa'].forEach(id=>document.getElementById(id).value='');
   renderGrid();
 }
 function rebuildFilters(){
@@ -834,7 +756,6 @@ function getFiltered(){
         mo=document.getElementById('f-modalidad').value,
         fa=document.getElementById('f-facultad').value,
         pr=document.getElementById('f-programa').value,
-        sp=document.getElementById('f-spend').value,
         tb=S.tab;
   return [...S.metaAds,...S.googleAds].filter(a=>{
     if(tb!=='all'&&a.medium!==tb) return false;
@@ -842,8 +763,6 @@ function getFiltered(){
     if(mo&&a.modalidad!==mo) return false;
     if(fa&&a.facultad!==fa) return false;
     if(pr&&a.programa!==pr) return false;
-    if(sp==='has_spend'&&!(a.spend>0)) return false;
-    if(sp==='no_spend'&&(a.spend>0)) return false;
     if(q){
       const kws=(a.keywords||[]).map(k=>k.text).join(' ');
       if(![a.campaign_name,a.ad_name,a.headline,a.body_text,a.programa,a.facultad,...(a.headlines||[]),kws].join(' ').toLowerCase().includes(q)) return false;
@@ -875,9 +794,7 @@ function rMeta(ad){
     +(ad.destination_url?'<div class="field-row"><div class="field-lbl">URL de destino</div><div class="field-val"><a href="'+esc(ad.destination_url)+'" target="_blank">'+esc(ad.destination_url)+'</a></div></div>':'')
     +(ad.preview_shareable_link?'<div class="field-row"><div class="field-lbl">Preview</div><div class="field-val"><a href="'+esc(ad.preview_shareable_link)+'" target="_blank">Ver en Meta \u2197</a></div></div>':'')
     +'</div>'
-    +'<div class="card-footer"><span class="camp-chip" title="'+esc(ad.campaign_name)+'">&#128197; '+esc(ad.campaign_name)+'</span>'
-    +(ad.spend>0?'<span style="margin-left:auto;font-size:10px;font-weight:700;color:#16a34a;background:#dcfce7;padding:2px 7px;border-radius:10px">&#36; '+ad.spend.toLocaleString('es-CO',{maximumFractionDigits:0})+'</span>':'')
-    +'</div>'
+    +'<div class="card-footer"><span class="camp-chip" title="'+esc(ad.campaign_name)+'">&#128197; '+esc(ad.campaign_name)+'</span></div>'
     +'</div>';
 }
 
@@ -906,9 +823,7 @@ function rGoogle(ad,idx){
     +(ad.facultad?'<div class="field-row" style="margin-top:6px"><div class="field-lbl">Facultad</div><div class="field-val">'+esc(ad.facultad)+'</div></div>':'')
     +(ad.destination_url?'<div class="field-row"><div class="field-lbl">URL de destino</div><div class="field-val"><a href="'+esc(ad.destination_url)+'" target="_blank">'+esc(ad.destination_url)+'</a></div></div>':'')
     +'</div>'
-    +'<div class="card-footer"><span class="camp-chip" title="'+esc(ad.campaign_name)+'">&#128197; '+esc(ad.campaign_name)+'</span>'
-    +(ad.spend>0?'<span style="margin-left:auto;font-size:10px;font-weight:700;color:#16a34a;background:#dcfce7;padding:2px 7px;border-radius:10px">&#36; '+ad.spend.toLocaleString('es-CO',{maximumFractionDigits:0})+'</span>':'')
-    +'</div>'
+    +'<div class="card-footer"><span class="camp-chip" title="'+esc(ad.campaign_name)+'">&#128197; '+esc(ad.campaign_name)+'</span></div>'
     +'</div>';
 }
 
